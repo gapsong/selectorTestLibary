@@ -2,22 +2,26 @@ import get from "lodash.get";
 
 export const getPhone = ({ profile }) => profile.phone;
 
-const testNull = state => testFunction => nextTest => {
+const testNull = (state, testFunction) => nextTest => {
     var key = Object.keys(state);
     var temp = get(state, `${key}`);
-    return testFunction({ [key]: temp }) == null && nextTest;
+    console.log("nextTest", nextTest)
+    return testFunction({ [key]: temp }) == null && nextTest();
 };
 
-const testUndefined = state => testFunction => nextTest => {
+const testUndefined = (state, testFunction) => nextTest => {
     var key = Object.keys(state);
-    var temp = get(state, `${key}`);
+    var temp = {};
     return testFunction({ [key]: temp }) == undefined && nextTest;
 };
 
 const endChain = () => {
+    console.log("endChain");
     return true;
 };
 
-var temp = testNull({ profile: { phone: 1123 } })(getPhone)(endChain);
+const testChain = a => testNull(a)(testUndefined(a)(endChain));
+
+var temp = testNull({ profile: { phone: 1123 } }, getPhone)(endChain);
 
 console.log(temp);
